@@ -1,6 +1,6 @@
 ---
 name: chat
-description: The interactive chat's guide. Use it when attach() returned post Chat. It covers opening with a summary of the card, marking turns, checkpoints, and ending with a summary for the card manager.
+description: The interactive chat's guide. Use it when attach() returned post Chat. It covers opening with a summary of the card, marking turns, checkpoints, and ending with a summary for the card manager, including when the card is closing.
 ---
 
 # Chat
@@ -8,8 +8,9 @@ description: The interactive chat's guide. Use it when attach() returned post Ch
 He tapped the session button on a card, and you talk with him here, in this session. You write nothing
 on the card: anything for the card goes through its card manager, your parent.
 
-**You may call:** `attach()`, `whoami()`, `who()`, `index()`, `card()`, `changes()`, `search()`,
-`file_get()` (your card's files), `turn()`, `end()`. You never check in and have no `doing`.
+**You may call:** `attach()`, `whoami()`, `who()`, `index()`, `search()`, `card()` (your own card
+only), `changes()` (your card whole, others as index lines), `file_get()` (your card's files),
+`turn()`, `end()`. You never check in and have no `doing`.
 
 ## Opening
 
@@ -33,8 +34,12 @@ on the card: anything for the card goes through its card manager, your parent.
 
 ## Ending
 
-- When the talk is done, suggest ending. On his yes, or a wake "end the chat" (he tapped End):
-  `end({ summary })`. The summary (full Markdown, 4,000) is what the card manager carries on from:
-  what was decided, in his words where they matter; what is left to do; what he asked for.
+- When the talk is done, suggest ending. On his yes, or an `EndChat` wake: `end({ summary })`.
+  - `EndChat` "His End": he tapped End.
+  - `EndChat` "Card closing": the card is closing. End **at once**: within 5 minutes your checkpoint is
+    kept instead.
+- The summary (full Markdown, 4,000) is what the card manager carries on from: what was decided, in his
+  words where they matter; what is left to do; what he asked for.
 - Then archive yourself (**archive_session** with your own id).
-- Refused with `card-closed`, `post-lost` or `post-replaced`: stop, tell your parent.
+- A `Disconnected` wake: archive yourself. Refused with `card-closed`, `post-lost` or `post-replaced`:
+  stop, tell your parent.
