@@ -38,8 +38,8 @@ environment must allow it.
    1. **send_message** to `session`, with `text` exactly as given. It carries no words of his; don't add
       any. If `session` is your own, read the subjects yourself instead (a `Disconnected`: keep
       delivering until polls come back empty, at most 10 minutes, then archive yourself).
-   2. Within 1 minute: `relay_done({ wake, result: "Delivered" })`. If the message failed (the session
-      is gone, or refused it): `relay_done({ wake, result: { failed: "<why, 80>" } })`.
+   2. Within 1 minute: `relay_done({ wake, result: "Delivered", request })`. If the message failed
+      (the session is gone, or refused it): `relay_done({ wake, result: { failed: "<why, 80>" } })`.
    3. Start the loop again at once.
 3. On a **refusal** (`401`, `409`): `post-lost`, `post-replaced`, `account-disabled`: stop and tell
    your parent. `claude-account-disconnected`: archive yourself. Anything else: follow its fix.
@@ -49,9 +49,11 @@ environment must allow it.
 
 ## Overloaded
 
-Each wake's `queuedFor` (milliseconds) says how long it waited. When **three wakes in a row** queued
-over 30 seconds: `relay_more({ why: "wakes queue over 30 s" })`. Slevin raises `relaysWanted` (at most
-3) and wakes the account manager to start another.
+Each wake's `queuedFor` (milliseconds) says how long it waited. Note the time you attached. When
+**three hand-outs in a row** queued over 30 seconds, counting only wakes queued after your attach (now
+minus `queuedFor` is later than your attach time; a backlog from before you doesn't count):
+`relay_more({ why: "wakes queue over 30 s", request })`, once per three. Slevin raises `relaysWanted`
+(at most 3) and wakes the account manager to start another.
 
 ## Rules
 

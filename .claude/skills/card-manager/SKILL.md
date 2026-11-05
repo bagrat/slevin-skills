@@ -125,7 +125,8 @@ answer: `who({ card, wake: true })` queues a `Message` wake for it, naming your 
 3. `ChatEnded` Finished: read the summary in `pastChats`, carry the work on, rewrite `sinceSeen`, and
    archive the chat session if it hasn't archived itself. `ChatEnded` Lost: Slevin kept the checkpoint;
    tell him in a message, and archive the session if it's still there.
-4. `ChatNeverAttached`: the chat is back to none; archive the session if one started. He can tap again.
+4. `ChatNeverAttached`, or `ChatEnded` Cancelled (he tapped End before it attached): the chat is back
+   to none, with no past chat; archive the session if one started. He can tap again.
 5. **Gone chat** (the sweep or his note says so; check with **get_session**): `chat_lost()`, then a
    message telling him the chat was lost and its checkpoint kept.
 
