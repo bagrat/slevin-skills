@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+// Plants each kind of error check-tools.mjs is meant to catch, one at a time, in a copy of this repo,
+// and sees each one caught (and the clean copy pass).
+//
+//   node scripts/test-check-tools.mjs <path to CONTRACT.md>
+
+import { spawnSync } from "node:child_process";
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+const contract = process.argv[2];
+if (!contract) {
+  console.error("usage: node scripts/test-check-tools.mjs <path to CONTRACT.md>");
+  process.exit(2);
+}
+const root = new URL("..", import.meta.url).pathname;
+const checker = join(root, "scripts/check-tools.mjs");
+
+const append = (file, text) => (dir) => writeFileSync(join(dir, file), readFileSync(join(dir, file), "utf8") + text);
+// Changes the "**You may call:**" paragraph of a skill only.
+const mayCall = (skill, edit) => (dir) => {
+  const p = join(dir, ".claude/skills", skill, "SKILL.md");
+  const text = readFileSync(p, "utf8");
+  const m = /^\*\*You may call:\*\*[\s\S]*?(?=\n\s*\n)/m.exec(text);
+  writeFileSync(p, text.slice(0, m.index) + edit(m[0]) + text.slice(m.index + m[0].length));
+};
+const old = ["B", "ench"].join("");
+
+const plants = [
+  ["an unknown tool", append("CLAUDE.md", "\nCall `relay_pull()` now.\n"), /`relay_pull\(\)` is not a tool/],
+  ["an unknown top-level input", append(".claude/skills/chat/SKILL.md", "\nThen `end({ summary, outcome })`.\n"), /end has no input `outcome`/],
+  ["an unknown nested input in a list", append(".claude/skills/card-manager/SKILL.md", "\nUse `ask({ asks: [{ kind, text, label }] })`.\n"), /ask\.asks\[0\] has no input `label`/],
+  ["a value outside a literal union", append(".claude/skills/chat/SKILL.md", '\nHand it over: `turn({ turn: "Him" })`.\n'), /turn\.turn is "Him"/],
+  ["an unknown union tag", append(".claude/skills/account-manager/SKILL.md", '\nThen `key({ for: { t: "Relays" } })`.\n'), /key\.for\.t is "Relays"/],
+  ["an unknown key in a tagged branch", append(".claude/skills/workspace-manager/SKILL.md", '\nSort it: `sort({ note, to: { t: "OntoCard", cards } })`.\n'), /sort\.to has no input `cards`/],
+  ["a bad input in a call that wraps a line", append(".claude/skills/card-manager/SKILL.md", "\nThen `report({ doing,\n  checkIn })` at once.\n"), /report has no input `checkIn`/],
+  ["an unknown refusal name", append(".claude/skills/relay/SKILL.md", "\nOn `post-gone`, stop.\n"), /`post-gone` is not a refusal/],
+  ["an unknown /agent/ path in a script", append(".claude/skills/relay/poll.sh", '\n# curl "$base/agent/relay_pol"\n'), /\/agent\/relay_pol is not a tool/],
+  ["a tool outside the role in its list", mayCall("relay", (s) => s.replace("`relay_more()`", "`relay_more()`, `ask()`")), /lists `ask\(\)`, which §2 doesn't give the relay/],
+  ["a tool of the role missing from its list", mayCall("chat", (s) => s.replace(/`end\(\)`/, "`whoami()`")), /leaves out `end\(\)`, which §2 gives the chat/],
+  ["an unknown wake subject in a wakes table", append(".claude/skills/chat/SKILL.md", "\n| Subject | Do |\n| --- | --- |\n| `ChatClosed` | Stop. |\n"), /`ChatClosed` is not a wake subject/],
+  ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
+];
+
+function copy() {
+  const dir = mkdtempSync(join(tmpdir(), "check-tools-test-"));
+  for (const p of ["CLAUDE.md", "README.md", ".claude", "scripts"]) cpSync(join(root, p), join(dir, p), { recursive: true });
+  return dir;
+}
+const check = (dir) => spawnSync("node", [checker, contract, "--root", dir], { encoding: "utf8" });
+
+const results = [];
+{
+  const dir = copy();
+  const r = check(dir);
+  results.push(r.status === 0 ? "✓ the clean copy passes" : `✗ the clean copy fails:\n${r.stderr}`);
+  rmSync(dir, { recursive: true, force: true });
+}
+for (const [name, plant, expect] of plants) {
+  const dir = copy();
+  plant(dir);
+  const r = check(dir);
+  const caught = r.status === 1 && expect.test(r.stderr);
+  results.push(caught ? `✓ caught: ${name}` : `✗ missed: ${name} (exit ${r.status})\n${r.stderr}`);
+  rmSync(dir, { recursive: true, force: true });
+}
+for (const l of results) console.log(l);
+const failed = results.filter((l) => l.startsWith("✗")).length;
+console.log(failed ? `${failed} failed` : `OK: ${plants.length} planted errors caught`);
+process.exit(failed ? 1 : 0);
