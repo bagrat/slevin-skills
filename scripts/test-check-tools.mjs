@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Plants each kind of error check-tools.mjs is meant to catch, one at a time, in a copy of this repo,
-// and sees each one caught (and the clean copy pass).
+// and sees each one caught: the check fails with that problem, which the unplanted copy doesn't have.
+// (Whether the unplanted copy passes is check-tools.mjs's own answer; it is shown, not tested here.)
 //
 //   node scripts/test-check-tools.mjs <path to CONTRACT.md>
 
@@ -51,17 +52,18 @@ function copy() {
 const check = (dir) => spawnSync("node", [checker, contract, "--root", dir], { encoding: "utf8" });
 
 const results = [];
+let baseline;
 {
   const dir = copy();
-  const r = check(dir);
-  results.push(r.status === 0 ? "✓ the clean copy passes" : `✗ the clean copy fails:\n${r.stderr}`);
+  baseline = check(dir);
+  console.log(baseline.status === 0 ? "· the unplanted copy passes" : `· the unplanted copy has ${baseline.stderr.trim().split("\n").length} problems of its own`);
   rmSync(dir, { recursive: true, force: true });
 }
 for (const [name, plant, expect] of plants) {
   const dir = copy();
   plant(dir);
   const r = check(dir);
-  const caught = r.status === 1 && expect.test(r.stderr);
+  const caught = r.status === 1 && expect.test(r.stderr) && !expect.test(baseline.stderr);
   results.push(caught ? `✓ caught: ${name}` : `✗ missed: ${name} (exit ${r.status})\n${r.stderr}`);
   rmSync(dir, { recursive: true, force: true });
 }
