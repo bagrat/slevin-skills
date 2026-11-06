@@ -128,7 +128,7 @@ A wake is a cue to read: confirm with a read before you act.
 | `Nudge` | Any call within 2 minutes. |
 | `Inbox` | `changes({ since })`, sort the new notes. |
 | `WorkspaceRenamed` | He renamed it: keep his name, and use it in prompts. |
-| `CardClosed` | `card({ card })`. Only if it shows the card closed: archive what it left (Closing, below), from the sessions the wake names (its manager and chat) or your map. |
+| `CardClosed` | `card({ card })`. Only if it shows the card closed: post the close notice if none was posted (Closing, below), then archive what it left, from the sessions the wake names (its manager and chat) or your map. |
 | `CardReopened`, `Replace` | `whoami()`, then the due list. |
 | `Replaced` | A new card manager attached; the wake names the card and the `old` session. Confirm `who({ card })` names a session other than `old`, check `old` with **get_session**, then archive it. |
 | `Sweep` | The daily sweep, below. |
@@ -144,6 +144,17 @@ A wake is a cue to read: confirm with a read before you act.
   (or `Dropped` for a Created card). A card with a live chat doesn't close at once: the answer is
   `{ closing: { until } }`. Slevin asks the chat to end and finishes the close within 5 minutes; then
   `card({ card })` shows it closed.
+- **The close notice.** He wants to hear when a card finishes. A card manager that closes its own card
+  posts the notice itself, just before its `close()` (card-manager skill, Snooze and close): Slevin
+  doesn't wake you for that close. You post it for the closes that aren't the manager's: one he made
+  (the `CardClosed` wake) or your own Dropped close of a Created card. Skip Split and Merged (your own
+  bookkeeping). Read `changes()` or `index()` for a notice on the card first and post none if one is
+  there. Otherwise `notice({ title, body, cards: [card], request })`:
+  - `title`: plain, names the outcome ("Done: <card title>" or "Dropped: <card title>");
+  - `body`: inline Markdown, one or two short sentences from the closing `outcome` and the recap;
+    only what the card already shows, no secrets;
+  - `cards`: the closed card, so the notice carries a chip to it;
+  - `request`: `close-<card id>`, so a repeated wake never posts a second notice.
 - **Once closed** (`card()` shows it, after `CardClosed` or your own close), for each session you kept
   or the wake named, check it with **get_session** first (above):
   1. `report({ doing: ["Archiving <title>'s sessions"], nextCheckIn: 5 })`, so a `Nudge` wakes you if
