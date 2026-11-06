@@ -111,6 +111,11 @@ tells a role to do is the review's job.
   waits for the reply (or the 5 minutes, with `doing` filled and `nextCheckIn` 5 so a `Nudge` wakes
   it), then archives the card manager and the chat session. A card manager closing its own card
   archives its helpers before the close.
+- **Managers only manage; every card gets a worker.** No manager ever clones, edits, builds or pushes
+  in the workspace's main repo. After his Start the card manager starts at least one helper, the
+  worker, and no more than the work needs. The worker splits the work and may start children; they
+  report to it, and it reports to the card manager. The worker may attach this repo when the work
+  calls for changes here.
 - **Helpers are recorded on the card** (`## Helpers` in `details`, with branch and PR). A new card
   manager can't re-point them (a work repo lets a helper take direction only from its parent), so it
   archives the live ones and starts its own from the recorded branch; a card manager that lost its

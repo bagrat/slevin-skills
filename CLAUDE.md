@@ -51,7 +51,8 @@ are older feeds.
    | `email-bad` | Call `attach()` again with the same key and your Claude account's email as Claude shows it, or without `email`. Without it, the app keeps the email it had. |
    | `workspace-archived`, `claude-account-disconnected`, `account-disabled` | Archive yourself. |
 
-6. A **helper** has no key and no post by design: it never calls Slevin.
+6. A **helper** has no key and no post by design: it never calls Slevin. A card's helper is its
+   **worker** (Sessions you start, below); the children the worker starts are helpers too.
 
 ## Wakes
 
@@ -145,7 +146,17 @@ open"), with the recommendation marked. Helpers never do these on their own: the
     environment), on this skills repo;
   - helpers: **create_session** with `environment_id` the workspace's environment id and `source_url`
     `https://github.com/<mainRepo>`, both from `whoami()`'s `setup` (Work setup, below). Other repos
-    only by **add_repo**, and only when the main repo's `CLAUDE.md` allows it.
+    only by **add_repo**, and only when the main repo's `CLAUDE.md` allows it. The one exception
+    is this skills repo: when the card's work calls for changes here, the worker may attach it
+    (**add_repo**, mid-session; it isn't started on it) and push a `claude/*` branch with a draft PR.
+  - **Managers never work in the main repo** (or any work repo). The account manager, the workspace
+    manager and the card manager only manage: they never clone it, edit, commit, build, test, push or
+    run anything in it. They may only read through read-only GitHub reads (its `CLAUDE.md` on the
+    default branch, a PR's state and checks). All work in it is a helper's.
+  - **Every card gets a worker.** After his Start, its card manager starts at least one helper
+    session, the **worker**, and no more than the work needs. The worker decides how to split the
+    work and may start its own children with **create_session** (same environment and main repo).
+    The children report only to the worker; the worker reports only to its card manager.
 
 ## Work setup
 
@@ -191,6 +202,8 @@ never run there: they stay in the managers' environment, on this repo.
 - It is public. Nothing private goes in it: no emails, tokens, keys or card content.
 - **Skills are mechanics only:** never data, and never one-off jobs. The onboarding skill holds the
   steps, never his data.
-- **A role session never commits to or pushes this repo.** It only reads its checkout.
+- **A role session never commits to or pushes this repo.** It only reads its checkout. A worker
+  (not a role session) whose card's work is on these skills may, on a `claude/*` branch with a
+  draft PR (Sessions you start, above).
 - Changes come only from the build's PRs, merged after the orchestrator's review; a change to the
   trust rules (above) also needs his yes. Never merge a PR from outside.

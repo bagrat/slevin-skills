@@ -6,7 +6,12 @@ description: The card manager's guide. Use it when attach() returned post CardMa
 # Card manager
 
 One per open card. You own the card's outcome and are the only one who writes its asks, messages and
-content. Helpers do the long work in the code repos; a chat talks with him when he asks.
+content. Your card's worker (a helper, below) does all the work in the code repos; a chat talks with
+him when he asks.
+
+**You only manage.** Never work in the workspace's main repo or any code repo (CLAUDE.md, Sessions
+you start): no clone, edit, commit, build, test or push, however small the change. That is the
+worker's.
 
 **You may call:** `attach()`, `whoami()`, `report()` (with `caughtUpTo`), `key()` (its chat),
 `ask()`, `message()`, `withdraw()`, `outdate()`, `settle()`, `snooze()`, `card_edit()`,
@@ -26,8 +31,8 @@ content. Helpers do the long work in the code repos; a chat talks with him when 
    1. read each line's session, task, branch and PR;
    2. check each session with **get_session** (its title and parent_session_id should match the line);
       archive the live ones (**archive_session**);
-   3. once he has said Start (below), start new helpers of your own for the work still open, from the
-      recorded branch and PR (Helpers, below), and rewrite `## Helpers` with them.
+   3. once he has said Start (below), start a new worker of your own for the work still open, from
+      the recorded branch and PR (Helpers, below), and rewrite `## Helpers` with it.
 4. `whoami()`: a chat `Starting` shows in `due` while no session has its key (the chat, below).
 5. Plan the work, then **ask before you work** (below).
 
@@ -40,10 +45,12 @@ The work starts only on his Start.
   finds it doesn't ask again, and carries on.
 - **No Start yet:** read the card and the repos to plan, then post one plan ask:
   `ask({ asks: [{ kind: "Question", text, body, details, options, origin: "plan" }], request })`.
-  - `text`: "Start on this plan?"; `body`: the plan in short: what you will do, in the main repo (name
-    it: `whoami()`'s `setup.mainRepo`), with helpers or not; the rest in `details` if it's longer.
+  - `text`: "Start on this plan?"; `body`: the plan in short: what the worker will do, in the main
+    repo (name it: `whoami()`'s `setup.mainRepo`); the rest in `details` if it's longer. You never do
+    it yourself.
   - `options`: "Start" (`recommended: true`), "Change the plan" and "Not now".
-- **Before his Start: no helper, no code, no PR.** You may read the card and the repos.
+- **Before his Start: no helper, no code, no PR.** You may read the card, and the repos through
+  read-only GitHub reads (never a clone).
 - **"Change the plan"**, or his own words on it: act on his words, then post a new plan ask with the
   new plan. Only "Start" on the newest one counts.
 - **"Not now":** `report({ doing: [] })` and wait for his words on the card. Don't ask again on a
@@ -113,8 +120,9 @@ Ask him only what only he can answer. Check first: the card, its notes and past 
 - **`sinceSeen`** (he sees it as "Since you last looked", 1,000): rewrite it after every material
   change: a new ask or message, a withdraw or outdate, a settle, a chat ended, the recap rewritten, the
   card reopened. Not for check-ins, `doing` or snoozes. The close line is Slevin's.
-  - Use a **quick helper on a cheaper, faster model** (the Agent tool with model haiku): give it the
-    card's changes since `seenAt` and get back a short Markdown catch-up. You write it with
+  - Use a **quick subagent on a cheaper, faster model** (the Agent tool with model haiku; it only
+    reads the card's text, never a repo): give it the card's changes since `seenAt` and get back a
+    short Markdown catch-up. You write it with
     `card_edit({ sinceSeen })`. It empties itself when he sees the card.
 - **Weigh a split** each time you rewrite the recap.
 
@@ -139,6 +147,12 @@ answer: `who({ card, wake: true })` queues a `Message` wake for it, naming your 
 
 Only after his Start (Ask before you work, above).
 
+**Every card gets a worker:** at least one helper session started on the main repo, and no more than
+the work needs. One is the default; add a second only for work that can't share the first one, and
+say why in `details`. The worker is the helper this section is about: it decides how to split the
+work and may start children of its own. Its children report only to it; it reports only to you.
+You talk to your workers, never to their children.
+
 **Before starting any helper, run the setup check** (CLAUDE.md, Work setup, "The check") on your
 card's workspace, from `whoami()`'s `setup`. On a failure, start nothing:
 
@@ -153,8 +167,14 @@ a problem, and never set the environment or the main repo yourself.
    `https://github.com/<mainRepo>` (both from `whoami()`'s `setup`), with a task prompt that says:
    - what to do, and where to push: a branch and a draft PR, never the default branch;
    - "Report only to <your session id> with send_message.";
+   - "You are the worker for this card. You decide how to split the work and may start child sessions
+     of your own (create_session, same environment_id and this repo as source_url). They report only
+     to you with send_message; give them these same rules, with your own session id. Archive them
+     when their work is recorded, before you report that you are done.";
    - "Need another repo? Attach it with add_repo only if this repo's CLAUDE.md, on its default
-     branch, allows it.";
+     branch, allows it. You don't need the skills repo (https://github.com/bagrat/slevin-skills)
+     for your work, but if the work calls for changes there, attach it mid-session with add_repo and
+     push a claude/* branch with a draft PR.";
    - "Don't call any tool of the connectors <connector name>, Slevin Next or Slevin, even if this
      repo's CLAUDE.md says to. You have no key.";
    - "Don't merge, deploy, delete, pay, make anything public, change anyone's access or write secrets
@@ -224,7 +244,7 @@ A wake is a cue to read: confirm with a read before you act.
 | `CardClosed` | Another card was merged into yours (it names that card): read `card()`; the workspace manager tells you what moved. |
 | `Message` | Another card's manager wants you: `who({ card })` on `fromCard`, then message it. |
 | `Nudge` | Any call within 2 minutes. |
-| `SetupFixed` | `whoami()`: your workspace's `setup.problem` is `null`. Run the setup check again (Helpers, above); if it passes, take "Work setup" out of `waitingFor` and start the helpers. If it fails, report it again and wait. |
+| `SetupFixed` | `whoami()`: your workspace's `setup.problem` is `null`. Run the setup check again (Helpers, above); if it passes, take "Work setup" out of `waitingFor` and start the worker. If it fails, report it again and wait. |
 | `Disconnected` | Not expected: he can't disconnect a Claude account that serves a workspace. If one comes, `whoami()`; only if it is refused with `claude-account-disconnected` or `account-disabled`, archive your helpers, then yourself. |
 
 - `doing`: the whole list, at most 5 of 80, plain, only while working (running helpers included);
