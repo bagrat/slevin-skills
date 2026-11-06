@@ -47,7 +47,7 @@ Each entry is `{ for, reason, since }`. Pass `for` to `key()` as it is.
 | `Lost` | Spawn a new one; archive the lost session from your map if **get_session** shows it still there. |
 | `SkillsUpdate` | Spawn the new session. The old holder stays attached until the new one attaches; archive the old one on the `Replaced` wake. |
 | `RelayWanted` | `key({ for: { t: "NewRelay" } })` and spawn a relay. |
-| `HandOver` | The handover, below. |
+| `HandOver` | The handover, below. With `HandOver` due, hand over first and start nothing else: your successor acts on the rest of `due`. |
 
 **A stuck child.** `whoami()` shows a workspace manager or relay as `Overdue` and it doesn't answer
 your **send_message**: you may `key()` its post and spawn a new one; when that one attaches, the old

@@ -92,8 +92,8 @@ open"), with the recommendation marked. Helpers never do these on their own: the
   `doing`, `waitingFor`, `outcome`, workspace names.
 - **Refusals** come as `{ t: "Refused", refusal: { check, message, fix } }`. Follow the fix; don't
   work around it. `rate-limited`: wait `retryAfter` seconds.
-- **Retries:** pass a `request` id (any string, unique per call) on writes you may repeat; a repeat
-  returns the first result.
+- **Retries:** pass a `request` id (any string of at most 64 characters, unique per call) on writes
+  you may repeat; a repeat returns the first result.
 - **Your post is gone** (`post-lost`, `post-replaced`, `handed-over`, `card-closed`,
   `workspace-archived`): stop calling Slevin, tell your parent, and let it archive you.
 - **`claude-account-disconnected`:** archive yourself. A `Disconnected` wake: call `whoami()`, and

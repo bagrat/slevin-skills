@@ -20,15 +20,18 @@ host: never guess one.
 
 ## Set up, once
 
-1. Write the bearer header to a file outside git, readable only by you. Do it in its own Bash call,
+1. Check the host, as your start prompt asks: `curl -sS -o /dev/null -w '%{http_code}'
+   "https://<host>/agent/whoami"; echo " exit $?"`. Reachable means exit 0 and a code other than
+   `000`; if not, see Network, above, and stop until it's fixed.
+2. Write the bearer header to a file outside git, readable only by you. Do it in its own Bash call,
    never chained with the poll, and never print it:
 
    ```bash
    umask 077; printf 'Authorization: Bearer %s\n' '<attachment>' > "$HOME/.relay-header"; chmod 600 "$HOME/.relay-header"
    ```
 
-2. Note the time you attached (for "Overloaded", below).
-3. Your polling is your check-in. Don't call `report()`; a relay that hasn't polled for 3 minutes is
+3. Note the time you attached (for "Overloaded", below).
+4. Your polling is your check-in. Don't call `report()`; a relay that hasn't polled for 3 minutes is
    overdue.
 
 ## The loop
@@ -58,7 +61,8 @@ host: never guess one.
 `claude-account-disconnected` or `account-disabled`, keep delivering what's left for at most 10
 minutes: run the loop as `timeout <seconds left of the 10 minutes> env APP_HOST=<host>
 .claude/skills/relay/poll.sh "$HOME/.relay-header"`, deliver each wake, and stop at the 10 minutes or
-at a 401 `no-attachment`, whichever comes first. Then archive yourself (**archive_session** with your
+at a 401 `no-attachment`, whichever comes first. In those minutes `relay_done()` may be refused with
+`claude-account-disconnected`: the message went all the same, so carry on. Then archive yourself (**archive_session** with your
 own id). If `whoami()` isn't refused, it was no reason to stop: carry on.
 
 ## Refusals and failures

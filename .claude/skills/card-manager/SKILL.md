@@ -176,6 +176,7 @@ A wake is a cue to read: confirm with a read before you act.
 | `StartChat` | The chat, above. |
 | `ChatEnded`, `ChatNeverAttached` | The chat, above. |
 | `SnoozeEnded` | Look again: is anything waiting on you? |
+| `CardClosed` | Another card was merged into yours (it names that card): read `card()`; the workspace manager tells you what moved. |
 | `Message` | Another card's manager wants you: `who({ card })` on `fromCard`, then message it. |
 | `Nudge` | Any call within 2 minutes. |
 | `Disconnected` | `whoami()`. Only if it is refused with `claude-account-disconnected` or `account-disabled`: archive your helpers, then yourself. |
