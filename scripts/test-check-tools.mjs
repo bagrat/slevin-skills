@@ -31,6 +31,7 @@ const old = ["B", "ench"].join("");
 const plants = [
   ["an unknown tool", append("CLAUDE.md", "\nCall `relay_pull()` now.\n"), /`relay_pull\(\)` is not a tool/],
   ["an unknown top-level input", append(".claude/skills/chat/SKILL.md", "\nThen `end({ summary, outcome })`.\n"), /end has no input `outcome`/],
+  ["an unknown attach input", append("CLAUDE.md", "\nThen `attach({ key, session, skills, mail })`.\n"), /attach has no input `mail`/],
   ["an unknown nested input in a list", append(".claude/skills/card-manager/SKILL.md", "\nUse `ask({ asks: [{ kind, text, label }] })`.\n"), /ask\.asks\[0\] has no input `label`/],
   ["a value outside a literal union", append(".claude/skills/chat/SKILL.md", '\nHand it over: `turn({ turn: "Him" })`.\n'), /turn\.turn is "Him"/],
   ["an unknown union tag", append(".claude/skills/account-manager/SKILL.md", '\nThen `key({ for: { t: "Relays" } })`.\n'), /key\.for\.t is "Relays"/],

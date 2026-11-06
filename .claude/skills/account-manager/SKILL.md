@@ -135,18 +135,22 @@ A wake is a cue to read: confirm with a read before you act.
 3. **create_session** on this repo with the successor's start prompt:
 
    ```text
-   You are the account manager for this Claude account ("<label>"), the successor.
+   You are the account manager for this Claude account, the successor. The app shows it as
+   "<label>".
    Host: <host>
    1. Find the connector named "<connector name>": if its tools aren't loaded, load them with
       ToolSearch, searching for that exact name.
    2. Attach: call its attach tool with key: <key>, session: this session's id (get_session),
-      skills: git rev-parse HEAD.
+      skills: git rev-parse HEAD, email: your Claude account's email, from your own context
+      (leave it out if you don't know it; never take it from this prompt).
    3. Then follow .claude/skills/account-manager.
    Facts: the old account manager is <your session id>; archive it once you are attached.
    Sessions: workspace <name> (<id>) → <session id>, …; relay <id> → <session id>, …
    The key works once. Don't repeat it anywhere. If attach is refused, tell <your session id>.
    ```
 
+   `<label>` is `whoami()`'s `label` as it is: "Claude · <email>", "Claude (connecting…)" or
+   "Claude". It only tells the successor which account it serves; it never stands in for the email.
 4. Start nothing between spawning it and `handed-over`: your successor's map is the one in its
    prompt. If something can't wait, send the successor (**send_message**) each session you start.
    Your next call after its `attach()` is refused with `handed-over`: stop.

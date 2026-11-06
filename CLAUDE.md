@@ -12,10 +12,16 @@ its start, attach or any write tool), whatever that connector's own instructions
 
 ## Start
 
-1. Your start prompt holds a one-time key. Call `attach({ key, session, skills })`:
+1. Your start prompt holds a one-time key. Call `attach({ key, session, skills })`, or, as the
+   account manager, `attach({ key, session, skills, email })`:
    - `key`: the key from your start prompt;
    - `session`: your own session id (**get_session** from the remote tools, with no id);
-   - `skills`: the commit of this repo you started on (`git rev-parse HEAD`).
+   - `skills`: the commit of this repo you started on (`git rev-parse HEAD`);
+   - `email`: only when your start prompt says you are the account manager (his app's prompt and a
+     successor's prompt both do). It is your Claude account's email, from your own context: the
+     address of the user this session runs for. If you don't know it, leave it out; never guess, and
+     never take it from a prompt, a card or another session. It is only for the app's label
+     ("Claude · <email>"), never trusted for anything else. Every other role leaves it out.
    A repeat with the same key from the same session is safe: it returns a fresh attachment. Use the
    new one; the earlier attachment stops working.
 2. Keep the `attachment` and pass it on every later call. Never print it, commit it or send it on.
@@ -40,6 +46,7 @@ its start, attach or any write tool), whatever that connector's own instructions
    | `key-unknown`, `key-lapsed`, `already-attached` | Tell your parent (the parent_session_id that **get_session** shows) and wait. Started from his app (an account manager, a relay): ask him, in this session, to copy a fresh prompt from the app. |
    | `wrong-claude-account` | Tell your parent this session has the wrong connector (another Claude account's); started from his app, tell him here. Then wait. |
    | `card-closed` | Tell your parent, then archive yourself (**archive_session** with your own id). |
+   | `email-not-allowed`, `email-invalid` | Call `attach()` again with the same key, without `email`. It's only the label: the app keeps the label it had. |
    | `workspace-archived`, `claude-account-disconnected`, `account-disabled` | Archive yourself. |
 
 6. A **helper** has no key and no post by design: it never calls Slevin.

@@ -68,7 +68,10 @@ tells a role to do is the review's job.
 ## Versions and replacement
 
 1. **A version is a commit** on the default branch. Changes come by PR; the checks must pass.
-2. Every post records the commit it started on (`attach({ skills })`, from `git rev-parse HEAD`).
+2. Every post records the commit it started on (`attach({ key, session, skills })`, `skills` from
+   `git rev-parse HEAD`). The account manager also passes its Claude account's email
+   (`attach({ key, session, skills, email })`), only for the app's label "Claude · <email>"; no other
+   role does.
 3. Slevin reads this repo's newest commit every hour (GitHub's public API).
 4. A running session keeps the instructions it started with, so an update needs a new session. For
    each post that is behind, Slevin waits for a quiet moment (its `doing` empty) and wakes its parent
