@@ -26,6 +26,8 @@ const mayCall = (skill, edit) => (dir) => {
   const m = /^\*\*You may call:\*\*[\s\S]*?(?=\n\s*\n)/m.exec(text);
   writeFileSync(p, text.slice(0, m.index) + edit(m[0]) + text.slice(m.index + m[0].length));
 };
+// Rewrites a file with a function of its text.
+const edit = (file, f) => (dir) => writeFileSync(join(dir, file), f(readFileSync(join(dir, file), "utf8")));
 const old = ["B", "ench"].join("");
 
 const plants = [
@@ -43,6 +45,8 @@ const plants = [
   ["a tool of the role missing from its list", mayCall("chat", (s) => s.replace(/`end\(\)`/, "`whoami()`")), /leaves out `end\(\)`, which §2 gives the chat/],
   ["an unknown wake subject in a wakes table", append(".claude/skills/chat/SKILL.md", "\n| Subject | Do |\n| --- | --- |\n| `ChatClosed` | Stop. |\n"), /`ChatClosed` is not a wake subject/],
   ["an unknown due reason in a due table", append(".claude/skills/account-manager/SKILL.md", "\n| reason | Do |\n| --- | --- |\n| `Stale` | Spawn one. |\n"), /`Stale` is not a due reason/],
+  ["the card manager working before his Start", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("Before his Start: no helper, no code, no PR.", "Start helpers at once.")), /ask before you work: the line "Before his Start/],
+  ["the plan ask without \"Not now\"", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace(' and "Not now".', ".")), /ask before you work: the plan ask's options/],
   ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
 ];
 

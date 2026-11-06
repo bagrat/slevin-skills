@@ -24,6 +24,8 @@
 // 6. In a wakes table (first column "Subject") every backticked PascalCase name must be a wake
 //    subject; in a due table (first column "reason") every one must be a due reason.
 // 7. The old working title must appear nowhere.
+// 8. The card-manager skill keeps "ask before you work": the plan ask's three options and the
+//    "before his Start" line.
 // Cloud tools (get_session, create_session, …) are written in bold, not backticks, so they aren't
 // taken for Slevin's. Fenced code blocks hold prompts and shell, and are skipped by 1–3 and 6.
 
@@ -374,6 +376,18 @@ for (const file of allFiles) {
       if (!set.has(m[1])) problems.push(`${where}:${i + 1}: \`${m[1]}\` is not a ${table === "subject" ? "wake subject (WakeSubject)" : "due reason (DueReason)"} in CONTRACT.md`);
     }
   });
+}
+
+// 8. The card manager asks before it works.
+{
+  const file = join(skillsDir, "card-manager/SKILL.md");
+  let text = "";
+  try { text = readFileSync(file, "utf8"); } catch {}
+  const keeps = [
+    ['the plan ask\'s options ("Start" recommended, "Change the plan" and "Not now")', /`options`: "Start" \(`recommended: true`\), "Change the plan" and "Not now"\./],
+    ['the line "Before his Start: no helper, no code, no PR."', /Before his Start: no helper, no code, no PR\./],
+  ];
+  for (const [what, re] of keeps) if (!re.test(text)) problems.push(`${relative(root, file)}: ask before you work: ${what} is missing`);
 }
 
 const unused = [...tools].filter((t) => !used.has(t));

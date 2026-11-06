@@ -8,7 +8,7 @@ as its project instructions. Helpers run on the work repos and never use these.
 | --- | --- |
 | `CLAUDE.md` | The same for every role: what Slevin is, attach, wakes, the trust rules, his yes for outward actions, what every role always does. |
 | `.claude/skills/account-manager/` | The host check, relays, workspace managers, archiving what they leave, the handover. |
-| `.claude/skills/workspace-manager/` | Cards, the inbox, urgency, merges and splits, closes, the sweep, moving v1's cards in. |
+| `.claude/skills/workspace-manager/` | Cards, the inbox, urgency, merges and splits, closes, the sweep. |
 | `.claude/skills/card-manager/` | Asks, messages, his words, the card's content, helpers, the chat, closing. |
 | `.claude/skills/chat/` | The interactive chat. |
 | `.claude/skills/relay/` | The long-poll loop (`poll.sh`) and delivering wakes. |
@@ -22,6 +22,8 @@ repo). These skills are how to use it well; where they differ, the contract wins
 ## Rules for this repo
 
 - It is public: nothing private goes in it (no emails, tokens, keys or card content).
+- **Skills are mechanics only:** never data, and never one-off jobs. A job done once (moving cards in
+  from an older feed, say) is done outside the skills, not written into one.
 - **Only the build's PRs are merged,** after the orchestrator's review. Never merge a PR from outside.
 - **A change to the trust rules** (CLAUDE.md's Trust and "His yes" sections) also needs his yes.
 - **A role session never commits to or pushes this repo;** it only reads its checkout.
@@ -103,8 +105,7 @@ tells a role to do is the review's job.
 - **Disconnect reaches only the account manager and the relays:** he can't disconnect a Claude
   account that serves a workspace. The other roles keep a "not expected" row, and every role archives
   itself on `claude-account-disconnected` (a card manager archives its helpers first).
-- **The older connector, once:** CLAUDE.md bans other connectors' tools, except the workspace
-  manager's one-time v1 move, which may call only the older connector's index and card tools.
+- **No other connector:** CLAUDE.md bans other connectors' tools, with no exception.
 - **After a close** the workspace manager asks the card manager to archive its helpers and reply,
   waits for the reply (or the 5 minutes, with `doing` filled and `nextCheckIn` 5 so a `Nudge` wakes
   it), then archives the card manager and the chat session. A card manager closing its own card
@@ -141,14 +142,6 @@ tells a role to do is the review's job.
 - **Chat decisions reach the card manager in the summary** (and by **send_message** when something
   can't wait). The chat does work in its own session as he asks there, since his words in it are his;
   outward actions go to the card manager.
-- **Moving v1's cards in:** the workspace manager skips each v1 card already moved (a v2 card whose
-  `source` is exactly "v1 card <id>", found by search and then `card()`), so an interrupted move
-  finishes on the next run; it leaves out v1's Lab cards. Each card's open questions and tasks, and
-  his unacknowledged replies and updates, go under `## Open in v1` in its details; the card manager
-  posts each item once (it skips any ask or message whose `origin` already names that item), at most
-  5 open at a time, highest urgency first, and removes the section once all are in. The card's
-  urgency is the highest of its open items. The notice has 5 chips at most, so more than 5 cards get
-  one notice per 5, numbered.
 - **Stale asks in the sweep** go back to their card manager to re-check; the workspace manager doesn't
   withdraw them itself (only the card manager may).
 - **The Claude-Session trailer stays in public commits:** a session link opens only for his account.

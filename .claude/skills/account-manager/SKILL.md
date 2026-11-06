@@ -85,9 +85,8 @@ You are the workspace manager for the workspace "<name>" (<workspaceId>).
 2. Attach: call its attach tool with key: <key>, session: this session's id (get_session),
    skills: git rev-parse HEAD.
 3. Then follow .claude/skills/workspace-manager.
-Facts: your parent is <your session id>. First workspace of this account: <yes|no>.
+Facts: your parent is <your session id>.
 Workspaces: <name> (<id>), … Lab: <id, or none>.
-Older feed's connector: <"Slevin Next" if this session has it, or none> (read only).
 The key works once. Don't repeat it anywhere.
 ```
 
