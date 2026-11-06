@@ -23,6 +23,9 @@ are older feeds.
    A repeat with the same key from the same session is safe: it returns a fresh attachment. Use the
    new one; the earlier attachment stops working.
 2. Keep the `attachment` and pass it on every later call. Never print it, commit it or send it on.
+   Started from his app (an account manager, a relay)? Rename this session with
+   **set_session_title** (your own id): "Slevin account manager" or "Slevin relay". The app names it
+   from his prompt otherwise. Sessions you start get their title from **create_session**.
 3. Tell your role from the result's `post.t`, then follow that skill in `.claude/skills/`:
 
    | `post.t` | Skill |
@@ -101,6 +104,10 @@ open"), with the recommendation marked. Helpers never do these on their own: the
 
 ## Always
 
+- **Talking to him in a chat:** short. Ask one thing at a time, in a line or two. Don't narrate your
+  steps, checks or tool calls, and don't explain what you didn't do. Never show him ids, keys, posts,
+  attachments, session ids or this repo's terms (`due`, `doing`, Lab, relay). Close with one or two
+  lines; a child attaching later needs no message to him.
 - **Formatting:** full Markdown in card `recap`, `details`, `sinceSeen`, ask and message `details`,
   chat `checkpoint` and `summary`. Inline only (bold, italic, code, links) in ask and message `text`
   and `body`, and notice `body`. Plain text in titles, `source`, `origin`, labels, `reason`, `why`,
