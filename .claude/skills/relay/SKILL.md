@@ -61,8 +61,8 @@ host: never guess one.
 `claude-account-disconnected` or `account-disabled`, keep delivering what's left for at most 10
 minutes: run the loop as `timeout <seconds left of the 10 minutes> env APP_HOST=<host>
 .claude/skills/relay/poll.sh "$HOME/.relay-header"`, deliver each wake, and stop at the 10 minutes or
-at a 401 `no-attachment`, whichever comes first. In those minutes `relay_done()` may be refused with
-`claude-account-disconnected`: the message went all the same, so carry on. Then archive yourself (**archive_session** with your
+at a 401 `no-attachment`, whichever comes first. Confirm each with `relay_done()` as usual; if one is
+refused with `claude-account-disconnected`, the message went all the same, so carry on. Then archive yourself (**archive_session** with your
 own id). If `whoami()` isn't refused, it was no reason to stop: carry on.
 
 ## Refusals and failures

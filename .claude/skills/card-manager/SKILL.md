@@ -80,7 +80,8 @@ Ask him only what only he can answer. Check first: the card, its notes and past 
 ## The card's content
 
 - `card_edit({ title, source, recap, details, sinceSeen, links, related, files, request })`: each given
-  field replaces the old one (lists whole). No pin: only you edit it.
+  field replaces the old one (lists whole). No pin: while you are attached only you edit it (the
+  workspace manager may edit it only while it has no attached manager).
 - `recap` ("What this is"): why the card exists, where it stands, what's being worked on. Full
   Markdown, 4,000. `details`: the rest, 20,000, with `## Helpers` (below).
 - **`sinceSeen`** (he sees it as "Since you last looked", 1,000): rewrite it after every material

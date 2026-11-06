@@ -10,7 +10,7 @@ managers. Card managers own everything on their cards.
 
 **You may call:** `attach()`, `whoami()`, `report()`, `key()` (your card managers), `card_new()`,
 `urgency()`, `sort()`, `close()` (a card before its manager attached, or as Split or Merged),
-`reopen()`, `notice()`, `who()`, `index()`, `card()` (any card here), `changes()` (the whole
+`reopen()`, `notice()`, `card_edit()` (a card with no attached card manager), `who()`, `index()`, `card()` (any card here), `changes()` (the whole
 workspace), `search()`, `file_add()`, `file_get()`, `workspace_edit()` (your own: name, preset icon
 and theme; never undo his rename).
 
@@ -56,6 +56,11 @@ key per post:** each `key()` replaces the earlier key at once, so call it only r
    - `related`: the card it came from, if any (linked both ways).
 4. From a note: `sort()` it NewCard now, before the card manager starts, so his note is on the card.
 5. Start its card manager **at once** with the returned key (30 minutes).
+
+**Editing a card yourself:** only while it has no attached card manager (`Created`, or its manager
+`Unattached`): `card_edit({ card, recap, details, links, related, request })`, to fix what you wrote
+or add what came in before its manager starts. Once a manager is attached the card is its own
+(`not-your-role`): send it what changed.
 
 **Test material goes to Lab:** anything only for him to try (a sample tile, a demo, a motion check) is
 a card in his Lab workspace, never on a real card. If it reaches you and you aren't Lab's manager,
