@@ -53,6 +53,7 @@ const plants = [
   ["a helper's create_session without the environment", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("with `environment_id` the workspace's environment id and ", "with ")), /create_session doesn't name `environment_id`/],
   ["a helper's create_session without the main repo", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("`https://github.com/<mainRepo>`", "of the repo")), /create_session doesn't use the main repo/],
   ["a card manager clearing a setup problem", append(".claude/skills/card-manager/SKILL.md", "\nWhen it works again, `setup_problem({ problem: null })`.\n"), /the card manager clears a setup problem/],
+  ["onboarding without the restart check", edit(".claude/skills/onboarding/SKILL.md", (t) => t.replace("before anything else, `whoami()`", "when you like, `whoami()`")), /onboarding: it doesn't check `whoami\(\)` first/],
   ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
 ];
 

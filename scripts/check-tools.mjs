@@ -29,6 +29,7 @@
 // 9. The card-manager skill's Helpers section runs the setup check before any helper.
 // 10. Its helper create_session names `environment_id` and `https://github.com/<mainRepo>`.
 // 11. The card manager never clears a setup problem (`setup_problem({ problem: null })`).
+// 12. The onboarding skill checks `whoami()` first, and with a workspace already there it's a restart.
 // Cloud tools (get_session, create_session, …) are written in bold, not backticks, so they aren't
 // taken for Slevin's. Fenced code blocks hold prompts and shell, and are skipped by 1–3 and 6.
 
@@ -410,6 +411,14 @@ for (const file of allFiles) {
   if (!/`environment_id`/.test(spawn)) problems.push(`${where}: work setup: a helper's create_session doesn't name \`environment_id\``);
   if (!/`https:\/\/github\.com\/<mainRepo>`/.test(spawn)) problems.push(`${where}: work setup: a helper's create_session doesn't use the main repo as source_url`);
   for (const m of prose.matchAll(/`setup_problem\(\{[^`]*\bproblem:\s*null/g)) problems.push(`${where}:${lineAt(prose, m.index)}: work setup: the card manager clears a setup problem; only the workspace and account managers may`);
+}
+
+// 12. Onboarding or a restart.
+{
+  const file = join(skillsDir, "onboarding/SKILL.md");
+  let text = "";
+  try { text = readFileSync(file, "utf8"); } catch {}
+  if (!/before anything else, `whoami\(\)`: if it shows a workspace already, this is a\s+restart, not onboarding\. Ask him nothing here/.test(text)) problems.push(`${relative(root, file)}: onboarding: it doesn't check \`whoami()\` first for a restart (a workspace already there)`);
 }
 
 const unused = [...tools].filter((t) => !used.has(t));

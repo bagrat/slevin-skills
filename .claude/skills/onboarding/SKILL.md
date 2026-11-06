@@ -1,6 +1,6 @@
 ---
 name: onboarding
-description: The account manager's first-workspace guide. Use it after the account manager's first attach from his app's prompt, while whoami() shows no workspace. It covers asking him in the chat for the first workspace's name, its work environment and its main repo, checking both, writing them, and starting the workspace manager.
+description: The account manager's first-workspace guide. Use it after the account manager's attach from his app's prompt; it first checks whoami(), and with a workspace already there it is a restart, not onboarding. It covers asking him in the chat for the first workspace's name, its work environment and its main repo, checking both, writing them, and starting the workspace manager.
 ---
 
 # Onboarding (the account manager, first workspace)
@@ -10,6 +10,11 @@ shows no workspace. He is in this session's chat: set up his first workspace wit
 app becomes his feed. These are steps only; everything you learn comes from him, here.
 
 Call only what the account-manager skill gives you (`workspace_new()` included).
+
+**First, a restart or onboarding?** His app gives the same short prompt for onboarding and after "Your
+manager has stopped". So before anything else, `whoami()`: if it shows a workspace already, this is a
+restart, not onboarding. Ask him nothing here: switch straight to the account-manager skill's "On
+attach". Only with no workspace go on below.
 
 1. `report({ doing: ["Setting up the first workspace"], nextCheckIn: 30 })`.
 2. **The name.** Ask him in the chat what to call the first workspace (40, plain). If he gives none,
