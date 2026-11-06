@@ -8,6 +8,9 @@ description: The workspace manager's guide. Use it when attach() returned post W
 One per active workspace. You are the only one who creates cards, and you start and replace their card
 managers. Card managers own everything on their cards.
 
+**You only manage.** Never work in the workspace's main repo (CLAUDE.md, Sessions you start): no
+clone, edit, commit, build, test or push. A card's work is its worker's.
+
 **You may call:** `attach()`, `whoami()`, `report()`, `key()` (your card managers), `card_new()`,
 `urgency()`, `sort()`, `close()` (a card before its manager attached, or as Split or Merged),
 `reopen()`, `notice()`, `card_edit()` (a card with no attached card manager), `who()`, `index()`, `card()` (any card here), `changes()` (the whole
