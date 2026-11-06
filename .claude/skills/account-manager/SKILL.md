@@ -149,8 +149,8 @@ A wake is a cue to read: confirm with a read before you act.
    The key works once. Don't repeat it anywhere. If attach is refused, tell <your session id>.
    ```
 
-   `<label>` is `whoami()`'s `label` as it is: "Claude · <email>", "Claude (connecting…)" or
-   "Claude". It only tells the successor which account it serves; it never stands in for the email.
+   `<label>` is `whoami()`'s `label` as it is: "Claude · <email>", or "Claude" while no email has
+   been reported. It only tells the successor which account it serves; it never stands in for the email.
 4. Start nothing between spawning it and `handed-over`: your successor's map is the one in its
    prompt. If something can't wait, send the successor (**send_message**) each session you start.
    Your next call after its `attach()` is refused with `handed-over`: stop.
