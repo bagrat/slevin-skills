@@ -31,6 +31,8 @@ attach". Only with no workspace go on below.
    repo).
 8. **Close** in the chat: "<name> is ready: work runs in <environment name> on <mainRepo>. Open the app
    to see your feed. To change these later, tell <name>'s manager in its chat."
+   That line is the whole close: no list of what you checked or started. Each question before it
+   is one or two lines too (CLAUDE.md, Always, "Talking to him in a chat").
 9. `report({ doing: [] })`, and go on as the account-manager skill says.
 
 ## If he stops halfway
