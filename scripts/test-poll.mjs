@@ -101,6 +101,14 @@ await test("polls on none without busy-looping, then exits on a wake", async () 
   assert(took >= 5800, `took ${took} ms`);
 });
 
+await test("a wake whose text says \"none\" is still a wake", async () => {
+  const wake = { wake: { id: "w2", session: "s1", post: { t: "Relay", relay: "r" }, subjects: [], text: 'Lab: "none"', queuedFor: 1 } };
+  answer = () => [200, wake, 0];
+  const r = await run({ APP_BASE: base }).done;
+  assert(r.code === 0 && r.out.trim() === `200 ${JSON.stringify(wake)}`, r.out);
+  assert(polls.length === 1, `${polls.length} polls`);
+});
+
 await test("a held none (over 5 s) is followed by the next poll at once", async () => {
   answer = (n) => (n < 2 ? [200, { none: true, pollAgain: 0 }, 5200] : [409, { t: "Refused", refusal: { check: "post-lost" } }, 0]);
   const r = await run({ APP_BASE: base }).done;

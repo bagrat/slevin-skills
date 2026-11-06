@@ -74,7 +74,9 @@ while :; do
     continue
   fi
   body="$(cat "$body_file")"
-  if [ "$status" = "200" ] && printf '%s' "$body" | grep -q '"none"'; then
+  # A none is the key "none": true with no wake; a wake whose text says "none" is still a wake.
+  if [ "$status" = "200" ] && printf '%s' "$body" | grep -q '"none":[[:space:]]*true' \
+      && ! printf '%s' "$body" | grep -q '"wake"'; then
     again=$(printf '%s' "$body" | sed -n 's/.*"pollAgain":[[:space:]]*\([0-9][0-9]*\).*/\1/p')
     next="${again:-0}"
     # A "none" that came back fast (a superseded or cut-short poll) never makes a busy loop.
