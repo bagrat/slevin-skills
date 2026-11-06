@@ -31,5 +31,6 @@ Call only what the account-manager skill gives you (`workspace_new()` included).
 ## If he stops halfway
 
 Nothing is written until step 6. If he leaves before then, wait for his next words here and pick up
-where he left off. If `workspace_new()` went through and the edit didn't, start the workspace manager
-anyway: its first check finds `NoSetup` and reports it, and the app shows "Fix in chat".
+where he left off. If `workspace_new()` went through and the edit didn't, report it,
+`setup_problem({ workspace, problem: "NoSetup", request })`, and start the workspace manager anyway:
+the app shows "Fix in chat", which opens that manager's chat.

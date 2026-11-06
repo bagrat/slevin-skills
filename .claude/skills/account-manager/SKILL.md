@@ -12,7 +12,7 @@ one in this chat, where you write it), cards are the workspace managers'.
 
 **You may call:** `attach()`, `whoami()`, `report()`, `key()` (workspace managers, relays, new relays,
 your successor), `workspace_new()` (the first workspace, in onboarding), `workspace_edit()` (its
-workspaces), `setup_problem()` (clearing one, after a good check), `who()`.
+workspaces), `setup_problem()` (naming the workspace: reporting one, or clearing one after a good check), `who()`.
 
 ## On attach
 
