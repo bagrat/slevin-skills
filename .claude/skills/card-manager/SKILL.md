@@ -236,7 +236,8 @@ a problem, and never set the environment or the main repo yourself.
   3. Slevin withdraws open asks, outdates open messages and writes the closing line. Then archive
      the chat session if it is still live (**get_session** first), and yourself (**archive_session**).
 - **Closed by him or the workspace manager:** your next call is refused `card-closed`. When the
-  workspace manager asks you to archive your helpers, do it, then reply; it archives you.
+  workspace manager asks you to archive your helpers, do it as in step 1 above (workers archive their
+  children first), then reply; it archives you and the chat.
 
 ## Wakes and check-ins
 
@@ -268,7 +269,7 @@ A wake is a cue to read: confirm with a read before you act.
 
 | Check | Do |
 | --- | --- |
-| `card-closed` | Stop. Archive your helpers, then tell your parent (from your start prompt or **get_session**); it archives you. |
+| `card-closed` | Stop. Archive your helpers (workers archive their children first), then tell your parent (from your start prompt or **get_session**); it archives you. |
 | `post-lost`, `post-replaced` | Stop. Leave the helpers: the new holder finds them under `## Helpers` and archives them. Tell your parent (from your start prompt or **get_session**). |
 | `claude-account-disconnected` | Archive your helpers, then yourself. |
 | `too-many-open` | Withdraw or outdate first. |

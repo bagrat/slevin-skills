@@ -152,6 +152,10 @@ A wake is a cue to read: confirm with a read before you act.
      Wait for its reply, or the 5 minutes, then check it with **get_session**.
   3. Archive the card manager and the chat session (**archive_session**), and take the entry out of
      `doing`.
+  4. **No manager answered** (lost, replaced or gone): read the card's `## Helpers` in `details`. For
+     each worker listed, **get_session** and archive it if it is live; find its children with
+     **list_sessions** (parent_session_id is the worker's) and archive the live ones. Check any other
+     session with its title and parent before archiving.
 
 ## Changing the work setup ("Change in chat", "Fix in chat")
 
