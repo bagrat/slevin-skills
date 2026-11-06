@@ -73,6 +73,7 @@ const roleTools = new Map(); // skill directory name → Set of tools
 //     | { k: "arr", of: Type } | { k: "union", of: Type[] } | { k: "ref", name }
 
 const ANY = { k: "any" };
+const NULL = { k: "null" }; // `| null` in a union: no string matches it
 
 function lexer(text, start) {
   let i = start;
@@ -135,6 +136,7 @@ function parsePrimary(lx) {
   if (lx.eat("(")) { const t = parseType(lx); lx.eat(")"); return t; }
   const w = lx.word();
   if (w === null) { lx.skipTo(",;})|"); return ANY; }
+  if (w === "null") return NULL;
   if (lx.eat("<")) {
     const inner = parseType(lx);
     lx.eat(">");
@@ -241,6 +243,7 @@ const describe = (t) => {
   if (t.k === "obj") return `{ ${[...t.fields.keys()].join(", ")} }`;
   if (t.k === "arr") return `${describe(t.of)}[]`;
   if (t.k === "union") return t.of.map(describe).join(" | ");
+  if (t.k === "null") return "null";
   return "any";
 };
 
@@ -264,9 +267,10 @@ function checkValue(val, type, path) {
     }
     const tries = members.map((x) => checkValue(val, x, path));
     if (tries.some((p) => p.length === 0)) return [];
-    if (val.v === "str" && members.every((x) => x.k === "lit")) return [`${path} is "${val.s}", not ${members.map(describe).join(" | ")}`];
+    if (val.v === "str" && members.every((x) => x.k === "lit" || x.k === "null")) return [`${path} is "${val.s}", not ${members.map(describe).join(" | ")}`];
     return [`${path} doesn't match ${describe(t)}`];
   }
+  if (t.k === "null") return [`${path} should be null`];
   if (t.k === "lit") {
     if (val.v !== "str") return [`${path} should be ${describe(t)}`];
     return t.vals.has(val.s) ? [] : [`${path} is "${val.s}", not ${describe(t)}`];
