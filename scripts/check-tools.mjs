@@ -26,6 +26,9 @@
 // 7. The old working title must appear nowhere.
 // 8. The card-manager skill keeps "ask before you work": the plan ask's three options and the
 //    "before his Start" line.
+// 9. The card-manager skill's Helpers section runs the setup check before any helper.
+// 10. Its helper create_session names `environment_id` and `https://github.com/<mainRepo>`.
+// 11. The card manager never clears a setup problem (`setup_problem({ problem: null })`).
 // Cloud tools (get_session, create_session, …) are written in bold, not backticks, so they aren't
 // taken for Slevin's. Fenced code blocks hold prompts and shell, and are skipped by 1–3 and 6.
 
@@ -388,6 +391,21 @@ for (const file of allFiles) {
     ['the line "Before his Start: no helper, no code, no PR."', /Before his Start: no helper, no code, no PR\./],
   ];
   for (const [what, re] of keeps) if (!re.test(text)) problems.push(`${relative(root, file)}: ask before you work: ${what} is missing`);
+}
+
+// 9–11. The card manager and the work setup.
+{
+  const file = join(skillsDir, "card-manager/SKILL.md");
+  let text = "";
+  try { text = readFileSync(file, "utf8"); } catch {}
+  const where = relative(root, file);
+  const prose = text.replace(/^[ \t]*```[\s\S]*?^[ \t]*```/gm, (b) => b.replace(/[^\n]/g, " "));
+  const helpers = /^## Helpers\n([\s\S]*?)(?=^## |(?![\s\S]))/m.exec(prose)?.[1] ?? "";
+  if (!/Before starting any helper, run the setup check/.test(helpers)) problems.push(`${where}: work setup: the Helpers section doesn't run the setup check before starting a helper`);
+  const spawn = /\*\*create_session\*\*[\s\S]*?task prompt/.exec(helpers)?.[0] ?? "";
+  if (!/`environment_id`/.test(spawn)) problems.push(`${where}: work setup: a helper's create_session doesn't name \`environment_id\``);
+  if (!/`https:\/\/github\.com\/<mainRepo>`/.test(spawn)) problems.push(`${where}: work setup: a helper's create_session doesn't use the main repo as source_url`);
+  for (const m of prose.matchAll(/`setup_problem\(\{[^`]*\bproblem:\s*null/g)) problems.push(`${where}:${lineAt(prose, m.index)}: work setup: the card manager clears a setup problem; only the workspace and account managers may`);
 }
 
 const unused = [...tools].filter((t) => !used.has(t));
