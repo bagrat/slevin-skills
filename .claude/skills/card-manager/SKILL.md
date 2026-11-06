@@ -243,11 +243,13 @@ a problem, and never set the environment or the main repo yourself.
 - `snooze({ until, why })` only when he asked, or nothing can move before then (5 minutes to 30 days).
   It only hides the card; work goes on.
 - `close({ ending, outcome })` when the outcome is reached (`Done`) or no longer wanted (`Dropped`).
-  `outcome`: one plain line (200). Write it as the summary he will read: the workspace manager builds
-  the close notice (the one he is told about) from this line and your recap, so say what was done or
-  why it was dropped. You don't post that notice yourself, and your attachment stops with the close,
-  so a notice from you after it is impossible; the `CardClosed` wake is the hand-off. Keep the recap
-  current before you close.
+  `outcome`: one plain line (200).
+  0. **Tell him first.** Slevin sends no notice when a card closes, and nobody else is woken for a
+     close you make, so you post it: right before `close()` (a notice after it is refused
+     `card-closed`), `notice({ title, body, cards: [your card], request })`. `title`: plain, "Done:
+     <card title>" or "Dropped: <card title>". `body`: inline Markdown, one or two short sentences on
+     what was done (or why it was dropped), the same facts as the `outcome` line, no secrets. `cards`:
+     your card, which gives him a chip to it. `request`: `close-<card id>`.
   1. Archive your helpers first, and record it: your attachment stops with the close. For each worker:
      **send_message** "The card is closing: archive your children, then reply."; wait for its reply or
      5 minutes; **get_session** (it is one you started), then archive it. The same for `Dropped`.
