@@ -158,9 +158,9 @@ open"), with the recommendation marked. Helpers never do these on their own: the
     manager and the card manager only manage: they never clone it, edit, commit, build, test, push or
     run anything in it. They may only read through read-only GitHub reads (its `CLAUDE.md` on the
     default branch, a PR's state and checks). All work in it is a helper's.
-  - **Every card gets a worker.** After his Start, its card manager starts at least one helper
-    session, the **worker**, and no more than the work needs. The worker decides how to split the
-    work and may start its own children with **create_session** (same environment and main repo).
+  - **Every card gets a worker.** Its card manager starts at least one helper
+    session, the **worker**, and no more than the work needs. The worker plans the work, starts it,
+    decides how to split it and may start its own children with **create_session** (same environment and main repo).
     The children report only to the worker; the worker reports only to its card manager.
 
 ## Work setup
