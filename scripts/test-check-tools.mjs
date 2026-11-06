@@ -26,11 +26,14 @@ const mayCall = (skill, edit) => (dir) => {
   const m = /^\*\*You may call:\*\*[\s\S]*?(?=\n\s*\n)/m.exec(text);
   writeFileSync(p, text.slice(0, m.index) + edit(m[0]) + text.slice(m.index + m[0].length));
 };
+// Rewrites a file with a function of its text.
+const edit = (file, f) => (dir) => writeFileSync(join(dir, file), f(readFileSync(join(dir, file), "utf8")));
 const old = ["B", "ench"].join("");
 
 const plants = [
   ["an unknown tool", append("CLAUDE.md", "\nCall `relay_pull()` now.\n"), /`relay_pull\(\)` is not a tool/],
   ["an unknown top-level input", append(".claude/skills/chat/SKILL.md", "\nThen `end({ summary, outcome })`.\n"), /end has no input `outcome`/],
+  ["an unknown attach input", append("CLAUDE.md", "\nThen `attach({ key, session, skills, mail })`.\n"), /attach has no input `mail`/],
   ["an unknown nested input in a list", append(".claude/skills/card-manager/SKILL.md", "\nUse `ask({ asks: [{ kind, text, label }] })`.\n"), /ask\.asks\[0\] has no input `label`/],
   ["a value outside a literal union", append(".claude/skills/chat/SKILL.md", '\nHand it over: `turn({ turn: "Him" })`.\n'), /turn\.turn is "Him"/],
   ["an unknown union tag", append(".claude/skills/account-manager/SKILL.md", '\nThen `key({ for: { t: "Relays" } })`.\n'), /key\.for\.t is "Relays"/],
@@ -42,6 +45,8 @@ const plants = [
   ["a tool of the role missing from its list", mayCall("chat", (s) => s.replace(/`end\(\)`/, "`whoami()`")), /leaves out `end\(\)`, which §2 gives the chat/],
   ["an unknown wake subject in a wakes table", append(".claude/skills/chat/SKILL.md", "\n| Subject | Do |\n| --- | --- |\n| `ChatClosed` | Stop. |\n"), /`ChatClosed` is not a wake subject/],
   ["an unknown due reason in a due table", append(".claude/skills/account-manager/SKILL.md", "\n| reason | Do |\n| --- | --- |\n| `Stale` | Spawn one. |\n"), /`Stale` is not a due reason/],
+  ["the card manager working before his Start", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("Before his Start: no helper, no code, no PR.", "Start helpers at once.")), /ask before you work: the line "Before his Start/],
+  ["the plan ask without \"Not now\"", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace(' and "Not now".', ".")), /ask before you work: the plan ask's options/],
   ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
 ];
 
