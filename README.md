@@ -93,13 +93,23 @@ tells a role to do is the review's job.
   read that must show it first.
 - **Sessions to archive** come from the wake that names them (`CardClosed`'s manager and chat,
   `WorkspaceArchived`'s manager, `Replaced`'s old) or from the parent's own map of the sessions it
-  started; `who()` no longer gives them once a card has closed. The account manager's map travels in
-  its successor's prompt.
+  started; `who()` no longer gives them once a card has closed. Before archiving one, the parent checks
+  it with **get_session**: its title, its parent_session_id or the map must agree. The account
+  manager's map travels in its successor's prompt, so it starts nothing between spawning the successor
+  and `handed-over` (or sends the successor each session it starts).
+- **Disconnect reaches only the account manager and the relays:** he can't disconnect a Claude
+  account that serves a workspace. The other roles keep a "not expected" row, and every role archives
+  itself on `claude-account-disconnected` (a card manager archives its helpers first).
+- **The older connector, once:** CLAUDE.md bans other connectors' tools, except the workspace
+  manager's one-time v1 move, which may call only the older connector's index and card tools.
 - **After a close** the workspace manager asks the card manager to archive its helpers and reply,
-  waits for the reply (or about 5 minutes, then checks it), then archives the card manager and the
-  chat session. A card manager closing its own card archives its helpers before the close.
-- **Helpers are recorded on the card** (`## Helpers` in `details`), so a new card manager finds them
-  and tells them where to report; a card manager that lost its post leaves them running.
+  waits for the reply (or the 5 minutes, with `doing` filled and `nextCheckIn` 5 so a `Nudge` wakes
+  it), then archives the card manager and the chat session. A card manager closing its own card
+  archives its helpers before the close.
+- **Helpers are recorded on the card** (`## Helpers` in `details`, with branch and PR). A new card
+  manager can't re-point them (a work repo lets a helper take direction only from its parent), so it
+  archives the live ones and starts its own from the recorded branch; a card manager that lost its
+  post leaves them for it.
 - **Relays only from `due`:** the account manager starts a relay only when `due` lists a slot, so the
   starting count is whatever `relaysWanted` says, and more come only after `relay_more()`.
 - **The host comes from the start prompt:** the account manager checks it with a `curl` to
@@ -118,7 +128,9 @@ tells a role to do is the review's job.
   in each workspace manager's prompt, and the workspace manager passes it to its card managers. A card
   manager asks Lab's workspace manager for test cards with **send_message**.
 - **Outward actions go through a Question ask** on the card (CLAUDE.md, "His yes"), unless the work
-  repo's own rules allow them; helpers are told not to merge, deploy, delete, pay or write secrets.
+  repo's `CLAUDE.md`, as the card manager reads it itself on the default branch, gives them to the card
+  manager's role; helpers are told not to merge, deploy, delete, pay, make anything public, change
+  anyone's access or write secrets.
 - **Since you last looked** is rewritten by a subagent on haiku (the Agent tool), which writes nothing;
   the card manager posts it with `card_edit()`.
 - **No "started from" message on a card born from another card's note** (v1's rule): in v2 the new
@@ -130,7 +142,8 @@ tells a role to do is the review's job.
   `source` is exactly "v1 card <id>", found by search and then `card()`), so an interrupted move
   finishes on the next run; it leaves out v1's Lab cards. Each card's open questions and tasks, and
   his unacknowledged replies and updates, go under `## Open in v1` in its details; the card manager
-  turns them into asks and messages only on a card from v1 that has never had an ask. The card's
+  posts each item once (it skips any ask or message whose `origin` already names that item), at most
+  5 open at a time, highest urgency first, and removes the section once all are in. The card's
   urgency is the highest of its open items. The notice has 5 chips at most, so more than 5 cards get
   one notice per 5, numbered.
 - **Stale asks in the sweep** go back to their card manager to re-check; the workspace manager doesn't

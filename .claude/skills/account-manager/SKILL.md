@@ -22,7 +22,8 @@ your successor), `workspace_edit()` (its workspaces), `who()`.
    curl -sS -o /dev/null -w '%{http_code}' "https://<host>/agent/whoami"; echo " exit $?"
    ```
 
-   Reachable means curl exited 0 and printed a code other than `000` (a 401 is fine). Through the
+   Reachable means curl exited 0 and printed a code other than `000` (any other code is fine, a 401
+   or a 405 included). Through the
    agent proxy a blocked host shows as `000` with exit 56. If it isn't reachable, tell him here, in
    this session: the environment must allow `<host>`. Start no relay until he has fixed it. Keep the
    host: it goes into every relay's and successor's prompt.
@@ -36,6 +37,10 @@ your successor), `workspace_edit()` (its workspaces), `who()`.
 
 Keep a map of the sessions you start: post → session id (from **create_session**). It's how you
 archive the right session later; it goes into your successor's prompt.
+
+**Before you archive any session** (one a wake names, or one from your map), check it with
+**get_session**: its title names the post, and its parent_session_id is yours, or your map has it. If
+they don't agree, don't archive it; tell him here.
 
 ## The due list
 
@@ -64,8 +69,7 @@ Relays: start them only from `due`. Slevin lists a new relay slot while fewer ar
 1. `report({ doing: ["Starting the workspace manager for Work"] })`.
 2. `key({ for, request })` → `{ key, expires, target }`. The key works once, within 30 minutes.
    `target` names the keyed post (a new relay's id included); `post` on the result is your own
-   check-in. Where the server doesn't return `target` yet, a new relay's id comes in its attach
-   message, or in `whoami()`'s `relays`.
+   check-in. Record `target` with the session in your map.
 3. **create_session** with `source_url` `https://github.com/bagrat/slevin-skills`, a title naming the
    post, and the start prompt below. Same environment as yours (it must allow the app's host).
 4. The key goes in the start prompt and nowhere else. Record the new session in your map.
@@ -111,8 +115,8 @@ A wake is a cue to read: confirm with a read before you act.
 | `WorkspaceMade` | `whoami()`; its manager is in `due`. Pass the new workspace list to the others only if they need it. |
 | `WorkspaceArchived` | Confirm: `who({ workspace })` shows it `Archived` (it's gone from `whoami()`'s `workspaces`). Then archive its manager's session: the one the wake names, or the one in your map; check it with **get_session** first. |
 | `Replace`, `RelayWanted`, `HandOver` | `whoami()`, then the due list. |
-| `Replaced` | A new holder attached; the wake names the post and the `old` session. Confirm (for a workspace manager, `who({ workspace })` names a session other than `old`; for a relay, its successor's attach message came), check `old` with **get_session**, then archive it. |
-| `Disconnected` | `whoami()`. Archive yourself only if it is refused with `claude-account-disconnected` or `account-disabled`. |
+| `Replaced` | A new holder attached; the wake names the post and the `old` session. Confirm (for a workspace manager, `who({ workspace })` names a session other than `old`; for a relay, `whoami()`'s `relays` shows it attached and your map has a newer session for it), check `old` with **get_session** (above), then archive it. |
+| `Disconnected` | `whoami()`. Archive yourself when it is refused with `claude-account-disconnected` or `account-disabled`. |
 
 ## Check-ins
 
@@ -143,7 +147,9 @@ A wake is a cue to read: confirm with a read before you act.
    The key works once. Don't repeat it anywhere. If attach is refused, tell <your session id>.
    ```
 
-4. Stay in charge meanwhile. Your next call after its `attach()` is refused with `handed-over`: stop.
+4. Start nothing between spawning it and `handed-over`: your successor's map is the one in its
+   prompt. If something can't wait, send the successor (**send_message**) each session you start.
+   Your next call after its `attach()` is refused with `handed-over`: stop.
 5. If it doesn't attach within 30 minutes, the key lapses and you stay; Slevin asks again later.
 
 ## Reaching other sessions

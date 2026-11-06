@@ -51,11 +51,13 @@ only), `changes()` (your card whole, others as index lines), `file_get()` (your 
 | Subject | Do |
 | --- | --- |
 | `EndChat` | Ending, above. |
-| `Disconnected` | `whoami()`. Archive yourself only if it is refused with `claude-account-disconnected` or `account-disabled`. |
+| `Disconnected` | Not expected: he can't disconnect a Claude account that serves a workspace. If one comes, `whoami()`, and archive yourself only if it is refused with `claude-account-disconnected` or `account-disabled`. |
 
 | Check | Do |
 | --- | --- |
-| `card-closed`, `post-lost`, `post-replaced` | Stop, and tell your parent: `who({ card })` gives the current card manager. |
+| `card-closed` | Stop, tell your parent (your start prompt's "your parent is …", or **get_session**'s parent_session_id), then archive yourself. |
+| `post-lost`, `post-replaced` | Stop, and tell your parent (your start prompt's "your parent is …", or **get_session**'s parent_session_id). |
+| `claude-account-disconnected` | Archive yourself. |
 | `not-your-turn` | A checkpoint goes only in your own turn: hand the turn over without it. |
 | `not-your-card` | You read only your own card; others by their index lines. |
 | `account-disabled`, `no-attachment` | Stop (CLAUDE.md, Always). |

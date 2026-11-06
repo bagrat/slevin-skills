@@ -17,6 +17,8 @@ set -u
 if [ -n "${APP_BASE:-}" ]; then
   base="$APP_BASE"
 elif [ -n "${APP_HOST:-}" ]; then
+  # Take the host alone, even when it comes as a URL ("https://<host>/…").
+  APP_HOST=${APP_HOST#https://}; APP_HOST=${APP_HOST%%/*}
   base="https://$APP_HOST"
 else
   echo "usage: APP_HOST=<host from your start prompt> poll.sh <header-file>" >&2
@@ -33,6 +35,10 @@ if [ "$(stat -c '%a' "$header_file" 2>/dev/null || stat -f '%Lp' "$header_file")
 fi
 
 # One loop per header file: a second one would end the first one's polls (one open poll per relay).
+if ! command -v flock >/dev/null 2>&1; then
+  echo "poll.sh needs flock (util-linux), which this machine lacks" >&2
+  exit 2
+fi
 exec 9>"$header_file.lock"
 flock -n 9 || { echo "another poll.sh is already running on $header_file" >&2; exit 3; }
 

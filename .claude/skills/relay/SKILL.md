@@ -61,26 +61,28 @@ host: never guess one.
 `claude-account-disconnected` or `account-disabled`, keep delivering what's left for at most 10
 minutes: run the loop as `timeout <seconds left of the 10 minutes> env APP_HOST=<host>
 .claude/skills/relay/poll.sh "$HOME/.relay-header"`, deliver each wake, and stop at the 10 minutes or
-at a 401 `no-attachment`, whichever comes first. Confirm each with `relay_done()` as usual; if one is
-refused with `claude-account-disconnected`, the message went all the same, so carry on. Then archive yourself (**archive_session** with your
-own id). If `whoami()` isn't refused, it was no reason to stop: carry on.
+at a 401 `no-attachment`, whichever comes first. Confirm each with `relay_done()` as usual. Then
+archive yourself (**archive_session** with your own id). If `whoami()` isn't refused, it was no reason to stop: carry on.
 
 ## Refusals and failures
 
 | Line | Do |
 | --- | --- |
-| `401` `no-attachment` | Your attachment no longer works. Never re-attach. After your own `Disconnected`: archive yourself. Otherwise tell your parent (or him, for a relay started from the app) and stop. |
-| `409` `post-lost`, `post-replaced` | Stop and tell your parent; it archives you. |
-| `409` `claude-account-disconnected` | Archive yourself. |
-| `409` `account-disabled` | Stop. |
-| `409` `wake-moved-on` (from `relay_done()`) | That wake went elsewhere: just poll again. |
-| `409` `relays-enough` (from `relay_more()`) | Enough relays: stop asking. |
-| `429` `rate-limited` | Start the loop again with `POLL_DELAY=<retryAfter>`. |
-| `5xx`, `pollFailed` | Check the network (above), then start the loop with `POLL_DELAY=60`. After a second failure in a row, tell your parent. |
+| `no-attachment` | Your attachment no longer works. Never re-attach. After your own `Disconnected`: archive yourself. Otherwise tell your parent (or him, for a relay started from the app) and stop. |
+| `post-lost`, `post-replaced` | Stop and tell your parent; it archives you. |
+| `claude-account-disconnected` | Archive yourself. |
+| `account-disabled` | Stop. |
+| `wake-moved-on` (from `relay_done()`) | That wake went elsewhere: just poll again. |
+| `relays-enough` (from `relay_more()`) | Enough relays: stop asking. |
+| `rate-limited` | Start the loop again with `POLL_DELAY=<retryAfter>`. |
+| a `5xx` status, `pollFailed` | Check the network (above), then start the loop again with `POLL_DELAY=60`, and keep it going that way while it fails. After a second failure in a row, also tell your parent. |
 | exit 3 | A loop already runs on your header file: wait for that one. |
 | Anything else | Follow its fix. |
 
-Telling your parent: the session in your start prompt. If **get_session** shows it archived, stop.
+Match a line by the refusal's check name (in its body), not by its HTTP status.
+
+Telling your parent: the session in your start prompt. If **get_session** shows it archived, stop
+trying to tell it, and keep the loop going.
 
 ## Overloaded
 

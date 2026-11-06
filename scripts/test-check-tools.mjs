@@ -41,6 +41,7 @@ const plants = [
   ["a tool outside the role in its list", mayCall("relay", (s) => s.replace("`relay_more()`", "`relay_more()`, `ask()`")), /lists `ask\(\)`, which §2 doesn't give the relay/],
   ["a tool of the role missing from its list", mayCall("chat", (s) => s.replace(/`end\(\)`/, "`whoami()`")), /leaves out `end\(\)`, which §2 gives the chat/],
   ["an unknown wake subject in a wakes table", append(".claude/skills/chat/SKILL.md", "\n| Subject | Do |\n| --- | --- |\n| `ChatClosed` | Stop. |\n"), /`ChatClosed` is not a wake subject/],
+  ["an unknown due reason in a due table", append(".claude/skills/account-manager/SKILL.md", "\n| reason | Do |\n| --- | --- |\n| `Stale` | Spawn one. |\n"), /`Stale` is not a due reason/],
   ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
 ];
 
