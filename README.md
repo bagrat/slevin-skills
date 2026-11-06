@@ -1,8 +1,9 @@
 # Slevin's role skills
 
 The role guides for the sessions that run Slevin: account manager, workspace manager, card manager,
-chat and relay. Every one of them is spawned on this repo, so `CLAUDE.md` and `.claude/skills/` load
-as its project instructions. Helpers run on the work repos and never use these.
+chat and relay. Every one but the chat is spawned on this repo, so `CLAUDE.md` and `.claude/skills/`
+load as its project instructions. Helpers run on the work repos and never use these; the chat runs
+there too, and gets its instructions in its brief from its card manager.
 
 | Path | What |
 | --- | --- |
@@ -11,7 +12,7 @@ as its project instructions. Helpers run on the work repos and never use these.
 | `.claude/skills/workspace-manager/` | Cards, the inbox, urgency, merges and splits, closes, the sweep. |
 | `.claude/skills/card-manager/` | Asks, messages, his words, the card's content, helpers, the chat, closing. |
 | `.claude/skills/onboarding/` | The account manager's first workspace, with him in its chat: the name, the work environment and the main repo. Steps only, never his data. |
-| `.claude/skills/chat/` | The interactive chat. |
+| `.claude/skills/chat/` | The interactive chat's guide. The card manager copies it into the chat's brief; the chat itself has no checkout of it. |
 | `.claude/skills/relay/` | The long-poll loop (`poll.sh`) and delivering wakes. |
 | `scripts/check-tools.mjs` | Checks the skills against the agent contract (below). |
 | `scripts/test-check-tools.mjs` | Plants each kind of error the check catches, and sees each caught. |
@@ -149,8 +150,9 @@ tells a role to do is the review's job.
   can't wait). The chat does work in its own session as he asks there, since his words in it are his;
   outward actions go to the card manager.
 - **Work setup per workspace:** a work environment (stored by id, shown by name) and one main repo.
-  Helpers run there (`environment_id` and `source_url` from `whoami()`'s `setup`); managers, relays and
-  chats stay in the managers' environment on this repo. Both fields come only from his words or his
+  Helpers run there (`environment_id` and `source_url` from `whoami()`'s `setup`); managers and relays stay
+  in the managers' environment on this repo; a chat runs in the work environment like a worker, with
+  its guide in its brief. Both fields come only from his words or his
   pick in a manager's chat. A card manager checks the setup before any helper and only reports a
   problem; the workspace manager and the account manager clear one. The first workspace is set up in
   the account manager's chat (the onboarding skill); later changes in the workspace manager's chat.
