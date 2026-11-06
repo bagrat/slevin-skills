@@ -30,7 +30,9 @@ worker's.
    section:
    1. read each line's session, task, branch and PR;
    2. check each session with **get_session** (its title and parent_session_id should match the line);
-      archive the live ones (**archive_session**);
+      archive the live ones (**archive_session**). A worker that is gone, failed or restarted may have
+      left children: find them with **list_sessions** (parent_session_id is the worker's) and archive
+      the live ones too;
    3. once he has said Start (below), start a new worker of your own for the work still open, from
       the recorded branch and PR (Helpers, below), and rewrite `## Helpers` with it.
 4. `whoami()`: a chat `Starting` shows in `due` while no session has its key (the chat, below).
@@ -170,7 +172,8 @@ a problem, and never set the environment or the main repo yourself.
    - "You are the worker for this card. You decide how to split the work and may start child sessions
      of your own (create_session, same environment_id and this repo as source_url). They report only
      to you with send_message; give them these same rules, with your own session id. Archive them
-     when their work is recorded, before you report that you are done.";
+     when their work is recorded, before you report that you are done. Do the same when I tell you
+     the card is closing: archive your children, then reply.";
    - "Need another repo? Attach it with add_repo only if this repo's CLAUDE.md, on its default
      branch, allows it. You don't need the skills repo (https://github.com/bagrat/slevin-skills)
      for your work, but if the work calls for changes there, attach it mid-session with add_repo and
@@ -186,7 +189,9 @@ a problem, and never set the environment or the main repo yourself.
    through his yes (above). When a helper reports a step that needs it, ask him, then pass his answer
    on as his answer.
 5. Archive each helper when its work is recorded (**get_session** first: it is one you started), and
-   drop its line.
+   drop its line. Before that, ask the worker (**send_message**) to archive its own children and
+   report; wait for its reply or 5 minutes. A worker that is gone: find its children (On attach,
+   step 3) and archive them yourself.
 
 ## The chat
 
@@ -239,13 +244,16 @@ a problem, and never set the environment or the main repo yourself.
   It only hides the card; work goes on.
 - `close({ ending, outcome })` when the outcome is reached (`Done`) or no longer wanted (`Dropped`).
   `outcome`: one plain line (200).
-  1. Archive your helpers first, and record it: your attachment stops with the close.
+  1. Archive your helpers first, and record it: your attachment stops with the close. For each worker:
+     **send_message** "The card is closing: archive your children, then reply."; wait for its reply or
+     5 minutes; **get_session** (it is one you started), then archive it. The same for `Dropped`.
   2. With a live chat the result is `{ closing: { until } }`: Slevin asks the chat to end and finishes
      the close within 5 minutes.
   3. Slevin withdraws open asks, outdates open messages and writes the closing line. Then archive
-     yourself (**archive_session**).
+     the chat session if it is still live (**get_session** first), and yourself (**archive_session**).
 - **Closed by him or the workspace manager:** your next call is refused `card-closed`. When the
-  workspace manager asks you to archive your helpers, do it, then reply; it archives you.
+  workspace manager asks you to archive your helpers, do it as in step 1 above (workers archive their
+  children first), then reply; it archives you and the chat.
 
 ## Wakes and check-ins
 
@@ -277,7 +285,7 @@ A wake is a cue to read: confirm with a read before you act.
 
 | Check | Do |
 | --- | --- |
-| `card-closed` | Stop. Archive your helpers, then tell your parent (from your start prompt or **get_session**); it archives you. |
+| `card-closed` | Stop. Archive your helpers (workers archive their children first), then tell your parent (from your start prompt or **get_session**); it archives you. |
 | `post-lost`, `post-replaced` | Stop. Leave the helpers: the new holder finds them under `## Helpers` and archives them. Tell your parent (from your start prompt or **get_session**). |
 | `claude-account-disconnected` | Archive your helpers, then yourself. |
 | `too-many-open` | Withdraw or outdate first. |
