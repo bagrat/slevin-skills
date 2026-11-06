@@ -6,10 +6,11 @@ as its project instructions. Helpers run on the work repos and never use these.
 
 | Path | What |
 | --- | --- |
-| `CLAUDE.md` | The same for every role: what Slevin is, attach, wakes, the trust rules, his yes for outward actions, what every role always does. |
+| `CLAUDE.md` | The same for every role: what Slevin is, attach, wakes, the trust rules, his yes for outward actions, what every role always does, the work setup. |
 | `.claude/skills/account-manager/` | The host check, relays, workspace managers, archiving what they leave, the handover. |
 | `.claude/skills/workspace-manager/` | Cards, the inbox, urgency, merges and splits, closes, the sweep. |
 | `.claude/skills/card-manager/` | Asks, messages, his words, the card's content, helpers, the chat, closing. |
+| `.claude/skills/onboarding/` | The account manager's first workspace, with him in its chat: the name, the work environment and the main repo. Steps only, never his data. |
 | `.claude/skills/chat/` | The interactive chat. |
 | `.claude/skills/relay/` | The long-poll loop (`poll.sh`) and delivering wakes. |
 | `scripts/check-tools.mjs` | Checks the skills against the agent contract (below). |
@@ -142,6 +143,12 @@ tells a role to do is the review's job.
 - **Chat decisions reach the card manager in the summary** (and by **send_message** when something
   can't wait). The chat does work in its own session as he asks there, since his words in it are his;
   outward actions go to the card manager.
+- **Work setup per workspace:** a work environment (stored by id, shown by name) and one main repo.
+  Helpers run there (`environment_id` and `source_url` from `whoami()`'s `setup`); managers, relays and
+  chats stay in the managers' environment on this repo. Both fields come only from his words or his
+  pick in a manager's chat. A card manager checks the setup before any helper and only reports a
+  problem; the workspace manager and the account manager clear one. The first workspace is set up in
+  the account manager's chat (the onboarding skill); later changes in the workspace manager's chat.
 - **Stale asks in the sweep** go back to their card manager to re-check; the workspace manager doesn't
   withdraw them itself (only the card manager may).
 - **The Claude-Session trailer stays in public commits:** a session link opens only for his account.

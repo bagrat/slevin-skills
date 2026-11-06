@@ -47,6 +47,13 @@ const plants = [
   ["an unknown due reason in a due table", append(".claude/skills/account-manager/SKILL.md", "\n| reason | Do |\n| --- | --- |\n| `Stale` | Spawn one. |\n"), /`Stale` is not a due reason/],
   ["the card manager working before his Start", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("Before his Start: no helper, no code, no PR.", "Start helpers at once.")), /ask before you work: the line "Before his Start/],
   ["the plan ask without \"Not now\"", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace(' and "Not now".', ".")), /ask before you work: the plan ask's options/],
+  ["a setup problem outside its union", append(".claude/skills/workspace-manager/SKILL.md", '\nThen `setup_problem({ problem: "Broken" })`.\n'), /setup_problem\.problem is "Broken"/],
+  ["an unknown key in workspace_edit's environment", append(".claude/skills/workspace-manager/SKILL.md", "\nThen `workspace_edit({ workspace, environment: { id, label } })`.\n"), /workspace_edit\.environment has no input `label`/],
+  ["a helper started without the setup check", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("Before starting any helper, run the setup check", "Start helpers when you like, after the check")), /the Helpers section doesn't run the setup check/],
+  ["a helper's create_session without the environment", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("with `environment_id` the workspace's environment id and ", "with ")), /create_session doesn't name `environment_id`/],
+  ["a helper's create_session without the main repo", edit(".claude/skills/card-manager/SKILL.md", (t) => t.replace("`https://github.com/<mainRepo>`", "of the repo")), /create_session doesn't use the main repo/],
+  ["a card manager clearing a setup problem", append(".claude/skills/card-manager/SKILL.md", "\nWhen it works again, `setup_problem({ problem: null })`.\n"), /the card manager clears a setup problem/],
+  ["onboarding without the restart check", edit(".claude/skills/onboarding/SKILL.md", (t) => t.replace("before anything else, `whoami()`", "when you like, `whoami()`")), /onboarding: it doesn't check `whoami\(\)` first/],
   ["the old working title", append("README.md", `\nOnce called ${old}.\n`), /the old working title appears/],
 ];
 
