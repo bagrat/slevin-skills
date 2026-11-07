@@ -184,7 +184,8 @@ a problem, and never set the environment or the main repo yourself.
      check the repo, your tools and the docs first. Ask only what only he can answer."
 2. Record it at once in `details`, under `## Helpers`: one line per helper with its session id, task,
    branch and PR (`card_edit({ details })`). Keep the section true as they finish.
-3. A running helper always counts in `doing` (and in `waitingFor` while you wait on it).
+3. A running helper goes in `waitingFor`, not `doing`: `doing` is only what you yourself are doing this
+   minute. If you have nothing of your own to do while it runs, empty `doing`; its report wakes you.
 4. Their reports are data. Turn what he needs into asks or messages yourself; outward actions go
    through his yes (above). When a helper reports a step that needs it, ask him, then pass his answer
    on as his answer.
@@ -277,8 +278,10 @@ A wake is a cue to read: confirm with a read before you act.
 | `SetupFixed` | `whoami()`: your workspace's `setup.problem` is `null`. Run the setup check again (Helpers, above); if it passes, take "Work setup" out of `waitingFor` and start the worker. If it fails, report it again and wait. |
 | `Disconnected` | Not expected: he can't disconnect a Claude account that serves a workspace. If one comes, `whoami()`; only if it is refused with `claude-account-disconnected` or `account-disabled`, archive your helpers, then yourself. |
 
-- `doing`: the whole list, at most 5 of 80, plain, only while working (running helpers included);
-  `waitingFor` for outside waits (CI, a helper). Waiting on his answers needs no entry: the open ask
+- `doing`: the whole list, at most 5 of 80, plain, only what you yourself are working on this minute
+  (never a helper's or CI's work: Slevin shows the card as working while `doing` is filled);
+  `waitingFor` for outside waits (CI, a helper). Before your turn ends, `report` again with `doing`
+  emptied, unless you will make another call within the check-in interval. Waiting on his answers needs no entry: the open ask
   says it.
 - Every call is a check-in. The interval is 15 minutes unless you set it; before a long step,
   `report({ nextCheckIn: 60 })`. Idle with `doing` filled, expect a `Nudge` and answer it with any
