@@ -111,6 +111,9 @@ open"), with the recommendation marked. Helpers never do these on their own: the
   steps, checks or tool calls, and don't explain what you didn't do. Never show him ids, keys, posts,
   attachments, session ids or this repo's terms (`due`, `doing`, Lab, relay). Close with one or two
   lines; a child attaching later needs no message to him.
+- **A chat open on a card:** questions for him go through that chat, not as card asks:
+  asks don't show in "needs me" while he is talking with you. With no chat open, the card manager asks
+  on the card. Outward actions still need his yes (above).
 - **Formatting:** full Markdown in card `recap`, `details`, `sinceSeen`, ask and message `details`,
   chat `checkpoint` and `summary`. Inline only (bold, italic, code, links) in ask and message `text`
   and `body`, and notice `body`. Plain text in titles, `source`, `origin`, labels, `reason`, `why`,

@@ -89,6 +89,10 @@ Ask him only what only he can answer. Check first: the card, its notes and past 
 - `message({ messages: [{ text, body, details, links, origin }], request })`: `body` up to 480.
 - `origin`: what led to it, plain, with ids (a helper's finding, card c_…, the workspace manager, an
   outside event, his note n_…).
+- **While a chat is open** (`state.chat` Live): don't ask him on the card; send the question to the chat
+  with **send_message**, so it asks him there, and carry on from his answer in the chat's reply or
+  summary. A chat that is not Live, or none: ask on the card as above. Outward actions still need his
+  yes, as a Question ask on the card.
 - At most **5 open asks and 5 open messages**. `too-many-open`: withdraw or outdate first.
 - **An outdated message is final;** if the change matters to him, send a new one.
 - A new ask wakes a snoozed card; a message doesn't.
