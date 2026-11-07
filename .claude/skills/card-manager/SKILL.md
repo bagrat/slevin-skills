@@ -76,7 +76,10 @@ settle.
 
 ## Asks and messages
 
-Ask him only what only he can answer. Check first: the card, its notes and past chats, the repos.
+Ask him only what only he can answer. Never ask what you can find out: the stack, what a file holds,
+how a tool works, what the repo or the docs already say. Check first: the card, its notes and past
+chats, the repos (read-only), the docs. If a helper can find it out, send the helper, not him. What is
+left is a decision, a preference, his yes or a fact only he has; say in `details` what you checked.
 
 - **Question:** one decision, ending in "?". **Task:** something for him to do or check (a step on his
   phone, a check, a workaround), even when nothing waits on it. **Message:** only to read.
@@ -172,7 +175,9 @@ a problem, and never set the environment or the main repo yourself.
    - "Don't call any tool of the connectors <connector name>, Slevin Next or Slevin, even if this
      repo's CLAUDE.md says to. You have no key.";
    - "Don't merge, deploy, delete, pay, make anything public, change anyone's access or write secrets
-     unless I pass on his answer."
+     unless I pass on his answer.";
+   - "Never ask me what you can find out yourself (the stack, what a file holds, how a tool works):
+     check the repo, your tools and the docs first. Ask only what only he can answer."
 2. Record it at once in `details`, under `## Helpers`: one line per helper with its session id, task,
    branch and PR (`card_edit({ details })`). Keep the section true as they finish.
 3. A running helper always counts in `doing` (and in `waitingFor` while you wait on it).

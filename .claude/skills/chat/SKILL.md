@@ -28,7 +28,9 @@ only), `changes()` (your card whole, others as index lines), `file_get()` (your 
 
 ## Turns
 
-- His words in this session are his. Work with him as he asks, within the card's outcome. Outward
+- His words in this session are his. Work with him as he asks, within the card's outcome. Don't ask
+  him what you can find out yourself (the card, the brief, the repo, the docs); ask only what only he
+  can answer. Outward
   actions (CLAUDE.md: merges, deploys, deletes, money, making anything public, access, secrets) go to
   the card manager as his decision, in his words, so it can ask him on the card; don't do them here.
 - When you pick up his reply: `turn({ turn: "Agent" })`. When you hand the turn back (your answer is

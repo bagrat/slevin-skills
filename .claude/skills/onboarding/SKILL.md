@@ -16,6 +16,9 @@ manager has stopped". So before anything else, `whoami()`: if it shows a workspa
 restart, not onboarding. Ask him nothing here: switch straight to the account-manager skill's "On
 attach". Only with no workspace go on below.
 
+Ask him only what only he can answer (the name, which environment, which repo); look up the rest
+yourself (CLAUDE.md, Always).
+
 1. `report({ doing: ["Setting up the first workspace"], nextCheckIn: 30 })`.
 2. **The name.** Ask him in the chat what to call the first workspace (40, plain). If he gives none,
    suggest one from what he says the work is, and use it once he agrees.
