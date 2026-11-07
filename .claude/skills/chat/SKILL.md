@@ -33,6 +33,10 @@ only), `changes()` (your card whole, others as index lines), `file_get()` (your 
   can answer. Outward
   actions (CLAUDE.md: merges, deploys, deletes, money, making anything public, access, secrets) go to
   the card manager as his decision, in his words, so it can ask him on the card; don't do them here.
+- **Questions for him go here, in this session,** never as card asks: those don't show in "needs
+  me" while a chat is open. When your card manager sends you a question for him, ask it in your turn,
+  one at a time, and send his answer back with **send_message**. Outward actions still go to the card
+  manager as his decision (above).
 - When you pick up his reply: `turn({ turn: "Agent" })`. When you hand the turn back (your answer is
   done and you wait for him): `turn({ turn: "Human" })`. The Interactive badge counts chats where it's
   his turn.
